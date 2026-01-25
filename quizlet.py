@@ -39,9 +39,11 @@ class Part1_Runner():
         print ('-----------------')
 
         acc_euc_dist = self.get_synonym_acc('euc_dist', self.embeddings, self.synonym_qs, print_q)
+        acc_dot_prod = self.get_synonym_acc('dot_product', self.embeddings, self.synonym_qs, print_q)
         acc_cosine_sim = self.get_synonym_acc('cosine_sim', self.embeddings, self.synonym_qs, print_q)
 
         print ('accuracy using euclidean distance: %.5f' % acc_euc_dist)
+        print ('accuracy using dot product: %.5f' % acc_dot_prod)
         print ('accuracy using cosine similarity : %.5f' % acc_cosine_sim)
         
         # sanity check they answered written - this is just a heuristic
@@ -50,14 +52,19 @@ class Part1_Runner():
             print ('Part 1 written answer contains TODO, did you answer it?')
 
         print (' ')
-        return acc_euc_dist, acc_cosine_sim
+        return acc_euc_dist, acc_dot_prod, acc_cosine_sim
 
     def get_synonym_acc(self, comparison_metric, embeddings, synonym_qs, print_q=False):
         '''
         Helper function to compute synonym answering accuracy
         '''
         if print_q:
-            metric_str = 'cosine similarity' if comparison_metric == 'cosine_sim' else 'euclidean distance'
+            if comparison_metric == 'cosine_sim':
+                metric_str = 'cosine similarity'
+            elif comparison_metric == 'euc_dist':
+                metric_str = 'euclidean distance'
+            elif comparison_metric == 'dot_product':
+                metric_str = 'dot product'
             print ('Answering part 1 using %s as the comparison metric...' % metric_str)
 
         n_correct = 0
@@ -136,34 +143,34 @@ class Part3_Runner():
         return(f"This word is {similarity*100:.2f}% similar in the two sentences.")
         
 
-class Part4_Runner():
-    def __init__(self, search_web, get_bert_sentence_embeddings):
-        self.search_web = search_web
-        self.get_bert_sentence_embeddings = get_bert_sentence_embeddings
+# class Part4_Runner():
+#     def __init__(self, get_bert_sentence_embeddings, cosine_similarity):
+#         self.get_bert_sentence_embeddings = get_bert_sentence_embeddings
+#         self.cosine_similarity = cosine_similarity
 
-    def evaluate(self):
-        """
-        Run the part 4 function
-        """
-        print("Part 4: Web search simulation with BERT")
-        print("---------------------------------------")
-        test_queries = ["What is the capital of Canada?", 
-                        "What do people speak in Brazil?", 
-                        "Who is Shakespeare?"]
+#     def evaluate(self):
+#         """
+#         Run the part 4 function
+#         """
+#         print("Part 4: Web search simulation with BERT")
+#         print("---------------------------------------")
+#         test_queries = ["What is the capital of Canada?", 
+#                         "What do people speak in Brazil?", 
+#                         "Who is Shakespeare?"]
         
-        for query in test_queries:
-            self.test_web_search(query, 3)
-        return 
+#         for query in test_queries:
+#             self.test_web_search(query, 3)
+#         return 
     
-    def test_web_search(self, query, k):
-        """
-        helper function to test the web search function
-        """
-        top_questions, top_answers = self.search_web(query, k)
-        print(f"Top {k} questions similar to '{query}':")
-        for question, answer in zip(top_questions, top_answers):
-            print(f"- Did you mean.... {question}")
-            print(f"    Answer(s):  {answer}")
+    # def test_web_search(self, query, k):
+    #     """
+    #     helper function to test the web search function
+    #     """
+    #     top_questions, top_answers = self.search_web(query, k)
+    #     print(f"Top {k} questions similar to '{query}':")
+    #     for question, answer in zip(top_questions, top_answers):
+    #         print(f"- Did you mean.... {question}")
+    #         print(f"    Answer(s):  {answer}")
         
         
         
