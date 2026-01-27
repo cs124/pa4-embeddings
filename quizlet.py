@@ -53,6 +53,16 @@ class Part1_Runner():
 
         print (' ')
         return acc_euc_dist, acc_dot_prod, acc_cosine_sim
+    
+    def evaluate_antonyms(self, antonym_light, get_antonyms, cosine_similarity):
+        light_antonym = antonym_light()
+        cosine_sim_light_antonym = cosine_similarity(self.embeddings['light'], self.embeddings[light_antonym])
+
+        print(f'cosine similarity between \'light\' and \'{light_antonym}\': {cosine_sim_light_antonym}')
+
+        w1, w2 = get_antonyms()
+        cosine_sim_antonyms = cosine_similarity(self.embeddings[w1], self.embeddings[w2])
+        print(f'cosine similarity between \'{w1}\' and \'{w2}\': {cosine_sim_antonyms}')
 
     def get_synonym_acc(self, comparison_metric, embeddings, synonym_qs, print_q=False):
         '''
@@ -193,14 +203,14 @@ def load_synonym_qs(filename):
     returns list of tuples, each of the form:
         (word, [c1, c2, c3, c4], answer)
     '''
-    synonym_qs = []
+    qs = []
     with open(filename) as f:
         f.readline()    # skip header
         for line in f:
             word, choices_str, ans = line.strip().split('\t')
             choices = [c.strip() for c in choices_str.split(',')]
-            synonym_qs.append((word.strip(), choices, ans.strip()))
-    return synonym_qs
+            qs.append((word.strip(), choices, ans.strip()))
+    return qs
 
 # def load_analogy_qs(filename):
 #     '''
@@ -254,7 +264,7 @@ def load_stanford_web_questions():
     return dict
 
 def main():
-    print("Run homework assignment in pa5-quizlet.ipynb")
+    print("Run homework assignment in pa4-quizlet.ipynb")
 
 if __name__ == "__main__":
         main()
