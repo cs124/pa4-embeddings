@@ -1,7 +1,8 @@
 """
-CS124 PA5: Quizlet // Stanford, Winter 2020
+CS124 PA4: Quizlet // Stanford, Winter 2020
 by @lcruzalb, with assistance from @jchen437
 parts 3, 4 are new in 2025 by @gdmagana
+part 1 has been revised in 2026 by @ishasinha1
 """
 import csv
 import sys
@@ -17,7 +18,7 @@ from gensim.models.keyedvectors import KeyedVectors
 import json
 
 #############################################################################
-###                    CS124 Homework 5: Quizlet!                         ###
+###                    CS124 Homework 4: Quizlet!                         ###
 #############################################################################
 
 # ------------------------- Do not modify code below --------------------------------
@@ -56,13 +57,20 @@ class Part1_Runner():
     
     def evaluate_antonyms(self, antonym_light, get_antonyms, cosine_similarity):
         light_antonym = antonym_light()
-        cosine_sim_light_antonym = cosine_similarity(self.embeddings['light'], self.embeddings[light_antonym])
-
-        print(f'cosine similarity between \'light\' and \'{light_antonym}\': {cosine_sim_light_antonym}')
+        if not light_antonym in self.embeddings.key_to_index.keys():
+            print(f'{light_antonym} is not in our embeddings data. Please select another answer.')
+        else:
+            cosine_sim_light_antonym = cosine_similarity(self.embeddings['light'], self.embeddings[light_antonym])
+            print(f'cosine similarity between \'light\' and \'{light_antonym}\': {cosine_sim_light_antonym}')
 
         w1, w2 = get_antonyms()
-        cosine_sim_antonyms = cosine_similarity(self.embeddings[w1], self.embeddings[w2])
-        print(f'cosine similarity between \'{w1}\' and \'{w2}\': {cosine_sim_antonyms}')
+        if not w1 in self.embeddings.key_to_index.keys():
+            print(f'{w1} is not in our embeddings data. Please select another word.')
+        elif not w2 in self.embeddings.key_to_index.keys():
+            print(f'{w2} is not in our embeddings data. Please select another word.')
+        else:
+            cosine_sim_antonyms = cosine_similarity(self.embeddings[w1], self.embeddings[w2])
+            print(f'cosine similarity between \'{w1}\' and \'{w2}\': {cosine_sim_antonyms}')
 
     def get_synonym_acc(self, comparison_metric, embeddings, synonym_qs, print_q=False):
         '''
