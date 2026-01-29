@@ -61,7 +61,14 @@ class Part1_Runner():
             print(f'{light_antonym} is not in our embeddings data. Please select another answer.')
         else:
             cosine_sim_light_antonym = cosine_similarity(self.embeddings['light'], self.embeddings[light_antonym])
+            cosine_sim_light_bright = cosine_similarity(self.embeddings['light'], self.embeddings['bright'])
+            print(f'cosine similarity between \'light\' and \'bright\': {cosine_sim_light_bright}')
             print(f'cosine similarity between \'light\' and \'{light_antonym}\': {cosine_sim_light_antonym}')
+
+            if cosine_sim_light_antonym > cosine_sim_light_bright:
+                print('Your antonym has a higher cosine similarity with \'light\' than its synonym \'bright\'')
+            else:
+                print('Your antonym does not satisfy the constraints of this question. Try again.')
 
         w1, w2 = get_antonyms()
         if not w1 in self.embeddings.key_to_index.keys():
