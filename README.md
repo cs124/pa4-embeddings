@@ -25,7 +25,7 @@ you'll want to:
 
 2. Enter the project root directory:
    
-        cd pa4-information-retrieval
+        cd pa4-embeddings
 
 3. Activate your environment. If you installed required packages into your cs124 environment, run:
         conda activate cs124
