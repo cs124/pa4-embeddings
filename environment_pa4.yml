@@ -1,0 +1,23 @@
+name: cs124_pa4
+channels:
+  - defaults
+  - pytorch
+  - huggingface
+  - conda-forge
+dependencies:
+  - python=3.10
+  - jupyter
+  - jupyter_client
+  - nb_conda>=2.2.1
+  - nbconvert
+  - numpy
+  - matplotlib>=3.6
+  - scikit-learn>=1.2
+  - spacy>=3.7
+  - nltk>=3.8
+  - gensim>=4.3
+  - transformers>=4.33.3
+  - pytorch>=1.11.0
+  - cpuonly
+  - timeout-decorator
+  - subprocess32

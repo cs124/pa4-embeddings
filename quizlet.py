@@ -1,7 +1,8 @@
 """
-CS124 PA5: Quizlet // Stanford, Winter 2020
+CS124 PA4: Quizlet // Stanford, Winter 2020
 by @lcruzalb, with assistance from @jchen437
 parts 3, 4 are new in 2025 by @gdmagana
+part 1 has been revised in 2026 by @ishasinha1
 """
 import csv
 import sys
@@ -17,7 +18,7 @@ from gensim.models.keyedvectors import KeyedVectors
 import json
 
 #############################################################################
-###                    CS124 Homework 5: Quizlet!                         ###
+###                    CS124 Homework 4: Quizlet!                         ###
 #############################################################################
 
 # ------------------------- Do not modify code below --------------------------------
@@ -39,9 +40,11 @@ class Part1_Runner():
         print ('-----------------')
 
         acc_euc_dist = self.get_synonym_acc('euc_dist', self.embeddings, self.synonym_qs, print_q)
+        acc_dot_prod = self.get_synonym_acc('dot_product', self.embeddings, self.synonym_qs, print_q)
         acc_cosine_sim = self.get_synonym_acc('cosine_sim', self.embeddings, self.synonym_qs, print_q)
 
         print ('accuracy using euclidean distance: %.5f' % acc_euc_dist)
+        print ('accuracy using dot product: %.5f' % acc_dot_prod)
         print ('accuracy using cosine similarity : %.5f' % acc_cosine_sim)
         
         # sanity check they answered written - this is just a heuristic
@@ -50,14 +53,43 @@ class Part1_Runner():
             print ('Part 1 written answer contains TODO, did you answer it?')
 
         print (' ')
-        return acc_euc_dist, acc_cosine_sim
+        return acc_euc_dist, acc_dot_prod, acc_cosine_sim
+    
+    def evaluate_antonyms(self, antonym_light, get_antonyms, cosine_similarity):
+        light_antonym = antonym_light()
+        if not light_antonym in self.embeddings.key_to_index.keys():
+            print(f'{light_antonym} is not in our embeddings data. Please select another answer.')
+        else:
+            cosine_sim_light_antonym = cosine_similarity(self.embeddings['light'], self.embeddings[light_antonym])
+            cosine_sim_light_bright = cosine_similarity(self.embeddings['light'], self.embeddings['bright'])
+            print(f'cosine similarity between \'light\' and \'bright\': {cosine_sim_light_bright}')
+            print(f'cosine similarity between \'light\' and \'{light_antonym}\': {cosine_sim_light_antonym}')
+
+            if cosine_sim_light_antonym > cosine_sim_light_bright:
+                print('Your antonym has a higher cosine similarity with \'light\' than its synonym \'bright\'')
+            else:
+                print('Your antonym does not satisfy the constraints of this question. Try again.')
+
+        w1, w2 = get_antonyms()
+        if not w1 in self.embeddings.key_to_index.keys():
+            print(f'{w1} is not in our embeddings data. Please select another word.')
+        elif not w2 in self.embeddings.key_to_index.keys():
+            print(f'{w2} is not in our embeddings data. Please select another word.')
+        else:
+            cosine_sim_antonyms = cosine_similarity(self.embeddings[w1], self.embeddings[w2])
+            print(f'cosine similarity between \'{w1}\' and \'{w2}\': {cosine_sim_antonyms}')
 
     def get_synonym_acc(self, comparison_metric, embeddings, synonym_qs, print_q=False):
         '''
         Helper function to compute synonym answering accuracy
         '''
         if print_q:
-            metric_str = 'cosine similarity' if comparison_metric == 'cosine_sim' else 'euclidean distance'
+            if comparison_metric == 'cosine_sim':
+                metric_str = 'cosine similarity'
+            elif comparison_metric == 'euc_dist':
+                metric_str = 'euclidean distance'
+            elif comparison_metric == 'dot_product':
+                metric_str = 'dot product'
             print ('Answering part 1 using %s as the comparison metric...' % metric_str)
 
         n_correct = 0
@@ -136,34 +168,34 @@ class Part3_Runner():
         return(f"This word is {similarity*100:.2f}% similar in the two sentences.")
         
 
-class Part4_Runner():
-    def __init__(self, search_web, get_bert_sentence_embeddings):
-        self.search_web = search_web
-        self.get_bert_sentence_embeddings = get_bert_sentence_embeddings
+# class Part4_Runner():
+#     def __init__(self, get_bert_sentence_embeddings, cosine_similarity):
+#         self.get_bert_sentence_embeddings = get_bert_sentence_embeddings
+#         self.cosine_similarity = cosine_similarity
 
-    def evaluate(self):
-        """
-        Run the part 4 function
-        """
-        print("Part 4: Web search simulation with BERT")
-        print("---------------------------------------")
-        test_queries = ["What is the capital of Canada?", 
-                        "What do people speak in Brazil?", 
-                        "Who is Shakespeare?"]
+#     def evaluate(self):
+#         """
+#         Run the part 4 function
+#         """
+#         print("Part 4: Web search simulation with BERT")
+#         print("---------------------------------------")
+#         test_queries = ["What is the capital of Canada?", 
+#                         "What do people speak in Brazil?", 
+#                         "Who is Shakespeare?"]
         
-        for query in test_queries:
-            self.test_web_search(query, 3)
-        return 
+#         for query in test_queries:
+#             self.test_web_search(query, 3)
+#         return 
     
-    def test_web_search(self, query, k):
-        """
-        helper function to test the web search function
-        """
-        top_questions, top_answers = self.search_web(query, k)
-        print(f"Top {k} questions similar to '{query}':")
-        for question, answer in zip(top_questions, top_answers):
-            print(f"- Did you mean.... {question}")
-            print(f"    Answer(s):  {answer}")
+    # def test_web_search(self, query, k):
+    #     """
+    #     helper function to test the web search function
+    #     """
+    #     top_questions, top_answers = self.search_web(query, k)
+    #     print(f"Top {k} questions similar to '{query}':")
+    #     for question, answer in zip(top_questions, top_answers):
+    #         print(f"- Did you mean.... {question}")
+    #         print(f"    Answer(s):  {answer}")
         
         
         
@@ -186,14 +218,14 @@ def load_synonym_qs(filename):
     returns list of tuples, each of the form:
         (word, [c1, c2, c3, c4], answer)
     '''
-    synonym_qs = []
+    qs = []
     with open(filename) as f:
         f.readline()    # skip header
         for line in f:
             word, choices_str, ans = line.strip().split('\t')
             choices = [c.strip() for c in choices_str.split(',')]
-            synonym_qs.append((word.strip(), choices, ans.strip()))
-    return synonym_qs
+            qs.append((word.strip(), choices, ans.strip()))
+    return qs
 
 # def load_analogy_qs(filename):
 #     '''
@@ -247,7 +279,7 @@ def load_stanford_web_questions():
     return dict
 
 def main():
-    print("Run homework assignment in pa5-quizlet.ipynb")
+    print("Run homework assignment in pa4-quizlet.ipynb")
 
 if __name__ == "__main__":
         main()
