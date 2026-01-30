@@ -27,16 +27,19 @@ you'll want to:
    
         cd pa4-embeddings
 
-3. Activate your environment. If you installed required packages into your cs124 environment, run:
-        conda activate cs124
-   
-   If you decided to create a new environment, run:
-        conda activate cs124_pa4
+3. Activate your environment. This assignment requires additional packages that you need to install! You have two options:
 
-   You'll need to do this every time you open a new terminal and re-start your
-   notebook server. You should have already created this conda environment 
-   as part of PA0. If not, and you encounter an error, please go back and 
-   follow the instructions there.
+   - If you want to installed required packages into your cs124 environment, run:
+         conda activate cs124
+         conda install -c pytorch pytorch
+         conda install -c huggingface transformers
+   
+   - If the option above doesn't work for you, or you prefer to create a new environment, run:
+         conda env create -f environment_pa4.yml
+         conda activate cs124_pa4
+
+   You'll need to activate your environment every time you open a new terminal and re-start your
+   notebook server.
 
 3. Start up your jupyter notebook server
 
